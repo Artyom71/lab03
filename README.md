@@ -166,7 +166,7 @@ $ gistup -m "lab${LAB_NUMBER}"
 с помощью которого можно будет собирать статическую библиотеку *formatter*.
 
 **Копируем репозиторий, переходим в директорию formatter_lib и создаем файл CMakeLists.txt**
-```ShellSession
+```
 Копирование репозитория на локальную машину
 $ git clone https://github.com/tp-labs/lab03 
 Переход в папку lab03
