@@ -165,6 +165,38 @@ $ gistup -m "lab${LAB_NUMBER}"
 Создайте `CMakeList.txt` в директории [formatter_lib](formatter_lib),
 с помощью которого можно будет собирать статическую библиотеку *formatter*.
 
+**Копируем репозиторий, переходим в директорию formatter_lib и создаем файл CMakeLists.txt**
+```ShellSession
+Копирование репозитория на локальную машину
+$ git clone https://github.com/tp-labs/lab03 
+Переход в папку lab03
+$ cd lab03
+Проверка наличия ветки
+$ git checkout patch1
+Переход в папку formatter_lib
+$ cd formatter_lib
+Создание CMakeLists.txt 
+$ touch CMakeLists.txt
+Выбор режима редактирования
+$ alias edit=sudo
+Открытие файла для редактирования
+$ edit CMakeLists.txt
+```
+**Редактирование файла CMakeLists.txt:**
+```
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(formatter)
+add_library(formatter STATIC formatter.cpp)
+target_include_directories(formatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+```
+**Производим сборку CMakeLists.txt:**
+```
+$ cmake -H. -B_build
+$ cmake --build _build
+```
+
 ### Задание 2
 У компании "Formatter Inc." есть перспективная библиотека,
 которая является расширением предыдущей библиотеки. Т.к. вы уже овладели
@@ -172,12 +204,75 @@ $ gistup -m "lab${LAB_NUMBER}"
 руководитель поручает заняться созданием `CMakeList.txt` для библиотеки 
 *formatter_ex*, которая в свою очередь использует библиотеку *formatter*.
 
+
+**Переход в необходимую директорию, создание файла CMakeLists.txt**
+```
+$ cd ..
+Переход в папку formatter_ex_lib
+$ cd formatter_ex_lib
+Открытие файла для редактирования
+$ nano CMakeLists.txt
+```
+**Редактирование файла CMakeLists.txt:*
+```
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(formatter_ex)
+add_library(formatter_ex STATIC formatter_ex.cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib ${CMAKE_CURRENT_BINARY_DIR}/formatter)
+target_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(formatter_ex formatter)
+```
+
 ### Задание 3
 Конечно же ваша компания предоставляет примеры использования своих библиотек.
 Чтобы продемонстрировать как работать с библиотекой *formatter_ex*,
 вам необходимо создать два `CMakeList.txt` для двух простых приложений:
 * *hello_world*, которое использует библиотеку *formatter_ex*;
 * *solver*, приложение которое испольует статические библиотеки *formatter_ex* и *solver_lib*.
+
+**Создаем файл в директории solver_lib**
+```
+$ cd ..
+Переход в папку solver_lib
+$ cd solver_lib
+Открываем поток ввода
+$ cat >> CMakeLists.txt << EOF
+> EOF
+Открытие файла для редактирования
+$ nano CMakeLists.txt
+```
+**Редактирование файла CMakeLists.txt:*
+```
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(solver_lib)
+add_library(solver_lib STATIC solver.cpp)
+target_include_directories(solver_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+```
+**Таким же методом создаем CMakeLists.txt в папке solver_application.**
+```
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(solver_example)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../solver_lib ${CMAKE_CURRENT_BINARY_DIR}/solver_lib)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib ${CMAKE_CURRENT_BINARY_DIR}/formatter_ex)
+add_executable(example equation.cpp)
+target_link_libraries(example solver_lib formatter_ex)
+```
+
+```
+cmake_minimum_required(VERSION 3.4)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(hello_world_example)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib ${CMAKE_CURRENT_BINARY_DIR}/formatter_ex)
+add_executable(example hello_world.cpp)
+target_link_libraries(example formatter_ex)
+```
 
 **Удачной стажировки!**
 
